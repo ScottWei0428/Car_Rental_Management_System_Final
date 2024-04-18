@@ -57,6 +57,16 @@ namespace management_system
             Regex priceregex = new Regex("^[0-9.]*$");
             Regex idregex = new Regex("^[0-9]*$");
 
+            foreach (var item in carListbox.Items)
+            {
+                string existingId = item.ToString().Split('-').Last().Trim();
+                if (existingId == carid)
+                {
+                    MessageBox.Show("Car ID already exists. Please use a unique Car ID or update the existing car.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+            }
+
             if (!modelregex.IsMatch(model))
             {
                 MessageBox.Show("Model name contains invalid characters. Please use only letters, digits, spaces, and underscores.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -104,6 +114,9 @@ namespace management_system
             {
                 MessageBox.Show(errorMessage, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
+
+
         }
         // Method to clear textboxes
         private void ClearTextBoxes()

@@ -64,7 +64,6 @@ namespace Rental
             }
             this.Focus();
         }
-
         private void btnRentCar_Click(object sender, EventArgs e)
         {
             if (!ValidateInput())
@@ -73,27 +72,43 @@ namespace Rental
                 return;
             }
 
-
             string customerID = cbCustomerID.Text;
             string carID = cbxCarID.Text;
             DateTime startDate = dtpStartDate.Value;
             DateTime endDate = dtpEndDate.Value;
 
+            // Fetch the car status from the database to ensure it's the latest information.
+            Car car = RentalDB.GetCar(carID);
+            if (car == null)
+            {
+                MessageBox.Show("The selected car does not exist.", "Car Unavailable", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (car.Status.ToLower() != "available")
+            {
+                MessageBox.Show($"The selected car ({carID}) has already been rented out.", "Car Unavailable", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Proceed to rent the car if it is available.
             int successId = RentalDB.RentCar(customerID, carID, startDate, endDate);
             if (successId > 0)
             {
                 MessageBox.Show("Car rental successful!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 string rentalInfo = $"Rented | Rental ID: {successId}, Car ID: {carID}, Customer ID: {customerID}, Start: {startDate.ToShortDateString()}, End: {endDate.ToShortDateString()}";
                 lbxInfo.Items.Add(rentalInfo);
-                PopulateCarList();
-                UpdateCarStatusListView();
             }
             else
             {
-                MessageBox.Show($"The selected car ({carID}) has already been rented out.", "Car Unavailable", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Error during the car rental process. Please try again.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+
+            // Always update the car list and status after any operation
+            PopulateCarList();
             UpdateCarStatusListView();
         }
+
 
         private bool ValidateInput()
         {
@@ -357,7 +372,7 @@ namespace Rental
                 cbxCarID.Items.Add(car.CarID);
             }
 
-            // 可选：默认选中第一个选项
+   
             if (cbxCarID.Items.Count > 0)
             {
                 cbxCarID.SelectedIndex = 0;

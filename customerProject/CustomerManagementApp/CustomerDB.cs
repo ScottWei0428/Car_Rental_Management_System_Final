@@ -128,13 +128,6 @@ namespace CustomerManagementProject
                     return false;
                 }
 
-                // Check if the updated details belong to another customer
-                if (IsDuplicate(customerId, name, address, phoneNumber, email))
-                {
-                    errorMessage = "Customer details already exist for another customer.";
-                    return false;
-                }
-
                
                 // Save the updated list of customers
                 using (var dbContext = new CarRentalDbContext())

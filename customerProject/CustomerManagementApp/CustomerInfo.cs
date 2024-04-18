@@ -37,32 +37,43 @@ namespace CustomerManagementApp
 
         private void UpdateCustomerBtn_Click(object sender, EventArgs e)
         {
-            int customerId = GetSelectedCustomerId();
-            if (customerId != -1)
+            if (customerListbox.Items.Count == 0)
             {
-                string name = customerName.Text;
-                string address = customerAddress.Text;
-                string phoneNumber = customerPhnNum.Text;
-                string email = customerEmail.Text;
-                string errorMessage;
+                MessageBox.Show("No customers available. Please add a customer first.", "Update Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
-                if (CustomerDB.UpdateCustomer(customerId, name, address, phoneNumber, email, out errorMessage))
-                {
-                    MessageBox.Show("Customer updated successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    RefreshCustomerListBox();
-                    ClearTextBoxes();
-                }
-                else
-                {
-                    MessageBox.Show(errorMessage, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+            if (customerListbox.SelectedIndex == -1)
+            {
+                MessageBox.Show("Please select a customer to update.", "Update Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            UpdateCustomer();
+        }
+        private void UpdateCustomer()
+        {
+            int customerId = GetSelectedCustomerId();
+            if (customerId == -1) return; 
+
+            string name = customerName.Text;
+            string address = customerAddress.Text;
+            string phoneNumber = customerPhnNum.Text;
+            string email = customerEmail.Text;
+            string errorMessage;
+
+            
+            if (CustomerDB.UpdateCustomer(customerId, name, address, phoneNumber, email, out errorMessage))
+            {
+                MessageBox.Show("Customer updated successfully.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                RefreshCustomerListBox();
+                ClearTextBoxes();
             }
             else
             {
-                MessageBox.Show("Please select a customer to update.");
+                MessageBox.Show(errorMessage, "Update Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
         private void ViewCustomerBtn_Click(object sender, EventArgs e)
         {
             int customerId = GetSelectedCustomerId();
